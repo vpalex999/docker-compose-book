@@ -3,6 +3,9 @@ services:
   task-manager:
     build: .
     image: task-manager:0.2
+    networks:
+      - task-manager-public-network
+      - redis-network
     ports:
       - 8080:8080
     environment:
@@ -18,6 +21,8 @@ services:
 
   redis:
     image: redis
+    networks:
+      - redis-network
     ports:
       - 6379:6379
     volumes:
@@ -27,6 +32,8 @@ services:
 
   redis-backup:
     image: bash
+    networks:
+      - task-manager-public-network
     entrypoint: [ "/snapshot-backup.sh" ]
     depends_on:
       - redis
@@ -36,6 +43,15 @@ services:
       - ./snapshot-backup.sh:/snapshot-backup.sh
       - redis-data:/data:ro
       - backup:/backup
+
+networks:
+  task-manager-public-network:
+    labels:
+      - com.packtpub.compose.app=task-manager
+
+  redis-network:
+    labels:
+      - com.packtpub.compose.app=task-manager
 
 volumes:
   redis-data:
