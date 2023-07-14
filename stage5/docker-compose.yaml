@@ -44,6 +44,17 @@ services:
       retries: 5
       start_period: 5s
 
+  event-service:
+    build:
+      context: ./events-service/
+    image: event-service:0.1
+    environment:
+      - REDIS_HOST=redis:6379
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+
 networks:
   location-network:
   redis-network:
